@@ -1,4 +1,4 @@
-const VKCOINAPI = require('node-vkcoinapi') // Libary Init
+const VKCOINAPI = require('nodejs-vkcoin-api') // Libary Init
 
 const vkcoin = new VKCOINAPI({
   key: 'ключ',

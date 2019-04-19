@@ -6,19 +6,19 @@
 * Создайте в удобном месте папку, например **vkcoin**
 * Перейдите в командную строку: Win + R > cmd
 * Перейдите в папку: **cd (путь до вашей папки)**
-* Пропишите: npm i nodejs-vkcoinapi
+* Пропишите: npm i nodejs-vkcoin-api
 
 ### Ubuntu:
 * Установите Node.JS по [этому](https://www.digitalocean.com/community/tutorials/node-js-ubuntu-16-04-ru) гайду
 * Создайте в удобном месте папку, например **vkcoin**
 * Перейдите в папку: **cd (путь до вашей папки)**
-* Пропишите: npm i nodejs-vkcoinapi
+* Пропишите: npm i nodejs-vkcoin-api
 # Начало работы
 Для начала использования, вам нужно создать в своей папке исполняемый файл, пусть это будет **index.js**
 
 Теперь его нужно открыть и импортировать библиотеку:
 ```js
-const VKCOINAPI = require('nodejs-vkcoinapi');
+const VKCOINAPI = require('nodejs-vkcoin-api');
 
 const vkcoin = new VKCOINAPI(options = {});
 ```

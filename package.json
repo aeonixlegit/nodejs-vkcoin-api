@@ -1,6 +1,6 @@
 {
   "name": "nodejs-vkcoin-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Node.JS VK Coin API implement",
   "main": "index.js",
   "dependencies": {
