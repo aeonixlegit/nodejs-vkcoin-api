@@ -1,27 +1,27 @@
-const VKCOINAPI = require('node-vkcoinapi'); // Импорт модуля
+const VKCOINAPI = require('node-vkcoinapi') // Libary Init
+
 const vkcoin = new VKCOINAPI({
-    key: 'Тут ключ',
-    userId: 123, // Тут ваш ID вк
-    token: 'Тут токен'
-});
+  key: 'Merchant Key',
+  userId: 1,
+  token: 'VK Auth Token',
+})
 
-const { VK } = require('vk-io'); // Импорт модуля для бота
-const vk = new VK(); // Новый экземпляр 
+const { VK } = require('vk-io') // Node.JS VK API Init
+const vk = new VK()
 
-vk.setOptions({ // Устанавливаем опции
-    pollingGroupId: 123, // Тут ID группы
-    token: 'Тут токен бота (группы)'
-});
+vk.setOptions({
+  token: 'VK Group Token',
+})
 
-vk.updates.on(['new_message'], async(msg) => { // Прослушка новых сообщений
-    if (msg.isOutbox) return; // Если исходящее, то возвращаем
+vk.updates.on(['new_message'], async (msg) => {
+  if (msg.isOutbox) return
 
-    if (msg.text === 'мой баланс') { // Если входящее сообщение будет в точности равно 'мой баланс', то...
-        const result = await vkcoin.getBalance([ msg.senderId ]); // Получаем баланс отправителя
-        const coins = vkcoin.formatCoins(result.response[msg.senderId]); // Делаем его читабельным
+  if (msg.text === 'мой баланс') { // Сравнение сообщений
+    const result = await vkcoin.getBalance([ msg.senderId ]) // Получение баланса отправителя
+    const coins = vkcoin.formatCoins(result.response[msg.senderId]) // Форматирование баланса
 
-        return msg.send(`Ваши коины: ${coins}`); // Отправляем сообщение
-    }
-});
+    return msg.send(`Ваши коины: ${coins}`) // Отправка сообщения
+  }
+})
 
-vk.updates.startPolling(); // Старт прослушивания
+vk.updates.startPolling()

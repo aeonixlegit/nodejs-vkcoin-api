@@ -1,26 +1,26 @@
-const VKCOINAPI = require('node-vkcoinapi'); // Импорт модуля
+const VKCOINAPI = require('node-vkcoinapi') // Libary Init
+
 const vkcoin = new VKCOINAPI({
-    key: 'Тут ключ',
-    userId: 123, // Тут ваш ID вк
-    token: 'Тут токен'
-});
+  key: 'Merchant Key',
+  userId: 1,
+  token: 'VK Auth Token',
+})
 
-const { VK } = require('vk-io'); // Импорт модуля для бота
-const vk = new VK(); // Новый экземпляр 
+const { VK } = require('vk-io') // Node.JS VK API Init
+const vk = new VK()
 
-vk.setOptions({ // Устанавливаем опции
-    pollingGroupId: 123, // Тут ID группы
-    token: 'Тут токен бота (группы)'
-});
+vk.setOptions({
+  token: 'VK Group Token',
+})
 
-vk.updates.on(['new_message'], async(msg) => { // Прослушка новых сообщений
-    if (msg.isOutbox) return; // Если исходящее, то возвращаем
+vk.updates.on(['new_message'], async (msg) => {
+  if (msg.isOutbox) return
 
-    if (msg.text === 'дайте коинов') { // Если входящее сообщение будет в точности равно 'дайте коинов', то...
-        await vkcoin.sendPayment(msg.senderId, 1000000); // Отправляем 1000 коинов пользователю
+  if (msg.text === 'give me coins') { // Проверка на текст сообщения
+    await vkcoin.sendPayment(msg.senderId, 1000000) // Отправка 1000,00 VK Coins пользователю
 
-        return msg.send('Мы отправили вам 1000 коинов, можете проверить!'); // Отправляем сообщение
-    }
-});
+    return msg.send('Произведена отправка 1000,00 коинов на Ваш счет! ;)') // Отправка сообщения пользователю.
+  }
+})
 
-vk.updates.startPolling(); // Старт прослушивания
+vk.updates.startPolling()
