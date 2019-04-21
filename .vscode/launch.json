@@ -4,17 +4,16 @@
     {
       "type": "node",
       "request": "launch",
-      // Запускать также можно через npm run dev и производить отладку через Chrome при помощи расширения NiM: https://vee.gg/gR1kP
       "name": "Start : Debug",
       "cwd": "${workspaceFolder}",
       "program": "${workspaceFolder}/index.js",
       "runtimeArgs": [
         "--nolazy",
-        "--inspect-brk=9229",
+        "--inspect-brk=9229"
       ],
       "env": {
         "NODE_ENV": "development",
-        "DEBUG": "hsbot:*",
+        "DEBUG": "node.js-vkcoin-api:*",
       },
       "restart": true,
       "stopOnEntry": true,
@@ -22,7 +21,7 @@
       // "console": "integratedTerminal",
       "skipFiles": [
           "node_modules/**",
-          "<node_internals>/**",
+          "<node_internals>/**"
       ],
     },
     {
@@ -37,7 +36,7 @@
       "restart": true,
       "skipFiles": [
           "node_modules/**",
-          "<node_internals>/**",
+          "<node_internals>/**"
       ],
     },
   ],
