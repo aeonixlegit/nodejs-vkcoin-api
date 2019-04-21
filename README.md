@@ -14,6 +14,9 @@
 </p>
 
 # Установка
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5de8b0849d9a4437b85ed29c82a92a81)](https://app.codacy.com/app/aeonixlegit/Node.JS-VK-Coin-API?utm_source=github.com&utm_medium=referral&utm_content=aeonixlegit/Node.JS-VK-Coin-API&utm_campaign=Badge_Grade_Dashboard)
+
 * Скачайте и произведите установку последней версии [Node.JS](https://nodejs.org/)
 * С помощью терминала произведите установку библиотеки: `npm i nodejs-vkcoin-api`
 
