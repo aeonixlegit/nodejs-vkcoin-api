@@ -1,12 +1,28 @@
 const WebSocket = require('ws')
-
-const KOA = require('koa')
-const koaBody = require('koa-body')
+const safeEval = require('safe-eval')
 
 const random = require('./functions/random')
 const request = require('./functions/request')
 const formatURL = require('./functions/formatURL')
 const getURLbyToken = require('./functions/getURLbyToken')
+
+function OmyEval (pow) {
+  let res = safeEval(pow, {
+    window: {
+      location: {
+        host: 'vk.com',
+      },
+      navigator: {
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+      },
+      WebSocket: true,
+      Math,
+      parseInt,
+    },
+  })
+
+  return res
+}
 
 class Updates {
   /**
@@ -18,6 +34,19 @@ class Updates {
     this.key = key
     this.token = token
     this.userId = userId
+
+    this.allowReconnect = true
+    this.callback = null
+    this.callbackForPackId = {}
+    this.connected = false
+    this.connecting = false
+    this.onConnectSend = []
+    this.ttl = 0
+
+    this.ws = null
+    this.wsServer = ''
+
+    this.retryTime = 1000
   }
 
   /**
@@ -28,90 +57,168 @@ class Updates {
     const url = await getURLbyToken(this.token)
     const wsURL = formatURL(url, this.userId)
 
-    this.ws = new WebSocket(wsURL)
-
-    this.ws.onopen = (data) => {
-      callback && callback(data)
-    }
-
-    this.ws.onerror = (data) => {
-      console.error(`Something happened with VK Coin: ${data.message}`)
-    }
+    this.run(wsURL, callback)
   }
 
-  /**
-   * @param {Object} options - WebHook options
-   * @param {String} options.url - WebHook Public IP / URL
-   * @param {Number} options.port - WebHook Conenction Port (default: 8181)
-   */
-  async startWebHook (options = {}) {
-    let { url, port } = options
+  run (wsServer, callback) {
+    this.wsServer = wsServer || this.wsServer
+    this.selfClose()
 
-    if (!url) {
-      throw new Error('WebHook public URL isn\'t found')
-    }
+    if (callback) this.callback = callback
 
-    if (!port) options.port = 8181
+    try {
+      this.ws = new WebSocket(this.wsServer)
 
-    this.app = new KOA()
-    this.app.use(koaBody())
-    this.app.listen(port)
+      this.ws.onopen = _ => {
+        this.connected = true
+        this.connecting = false
 
-    if (!/^(?:https?)/.test(url)) {
-      url = `http://${url}`
-    }
+        for (let packId in this.callbackForPackId) {
+          if (this.ws && this.callbackForPackId.hasOwnProperty(packId)) {
+            this.ws.send(this.callbackForPackId[packId].str)
 
-    const result = await request(
-      'https://coin-without-bugs.vkforms.ru/merchant/set/',
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: {
-          callback: `${url}:${port}`,
-          key: this.key,
-          merchantId: this.userId,
-        },
-        json: true,
-        method: 'POST',
+            clearTimeout(this.callbackForPackId[packId].ttl)
+            this.callbackForPackId[packId].ttl = setTimeout(function () {
+              this.callbackForPackId[packId].reject(new Error('TIMEOUT'))
+              this.dropCallback(packId)
+            }, 10000)
+          }
+        }
+
+        this.onOpen()
       }
-    )
 
-    if (result.response === 'ON') {
-      return true
-    }
-    else {
-      throw new Error(`Can't start WebSocket Callback: ${result}`)
+      this.ws.onerror = e => {
+        console.error('[WebSocket ERROR] Connection Error: ', e)
+        this.reconnect(wsServer, true)
+      }
+
+      this.ws.onclose = _ => {
+        this.connected = false
+        this.connecting = false
+
+        clearInterval(this.ttltick)
+        this.ttltick = null
+
+        this.ws = null
+
+        this.reconnect(wsServer)
+      }
+
+      this.ws.onmessage = ({ data: msg }) => {
+        if (msg[0] === '{') {
+          let data = JSON.parse(msg)
+          if (data.type === 'INIT') {
+            this.tick = parseInt(data.tick, 10)
+          }
+
+          if (data.pow) {
+            try {
+              let x = OmyEval(data.pow),
+                str = 'C1 '.concat(data.randomId, ' ') + x
+
+              if (this.connected) this.ws.send(str)
+              else this.onConnectSend.push(str)
+            } catch (e) { console.error(e) }
+          }
+        } else if (msg[0] === 'R') {
+          let p = msg.replace('R', '').split(' '),
+            d = p.shift()
+          this.rejectAndDropCallback(d, new Error(p.join(' ')))
+        } else if (msg[0] === 'C') {
+          let h = msg.replace('C', '').split(' '),
+            y = h.shift()
+
+          this.resoveAndDropCallback(y, h.join(' '))
+        } else if (msg === 'ALREADY_CONNECTED') {
+          this.retryTime = 15000
+          this.onAlredyConnectedCallback && this.onAlreadyConnectedCallback()
+        } else if (msg.indexOf('SELF_DATA') === 0) {
+          let data = msg.replace('SELF_DATA ', '').split(' ')
+          let packId = parseInt(data[3], 10)
+          this.resoveAndDropCallback(packId)
+        } else if (msg === 'BROKEN') {
+          this.retryTime = 25000
+          this.onBrokenEventCallback && this.onBrokenEventCallback()
+        } else if (msg.indexOf('TR') === 0) {
+          let data = msg.replace('TR ', '').split(' ')
+          let score = parseInt(data[0], 10),
+            from = parseInt(data[1]),
+            id = parseInt(data[2])
+
+          this.onTransferCallback && this.onTransferCallback(from, score, id)
+        }
+      }
+    } catch (e) {
+      console.error('[WebSocket ERROR] ', e)
+      this.reconnect(wsServer)
     }
   }
 
-  /**
-   * @param {Function} callback - Callback
-   * @returns {{ amount: Number, fromId: Number, id: Number }}
-   * Object with keys: amount - VK Coins amount, fromId - sender id и id - transaction ID
-   */
-  onTransfer (callback) {
+  close () {
+    this.allowReconnect = false
+    clearTimeout(this.ttl)
+    clearInterval(this.ttltick)
+    this.selfClose()
+  }
+
+  selfClose () {
     if (this.ws) {
-      this.ws.onmessage = (data) => {
-        const message = data.data
-        if (!/^(?:TR)/i.test(message)) return
+      try { this.ws.close() }
+      catch (e) { this.connected = false }
+    }
+  }
 
-        let { amount, fromId, id } = message.match(/^(?:TR)\s(?<amount>.*)\s(?<fromId>.*)\s(?<id>.*)/i).groups
+  reconnect (e, force = false) {
+    if (this.allowReconnect || force) {
+      clearTimeout(this.ttl)
+      this.ttl = setTimeout(() => {
+        this.run(e || this.wsServer)
+      }, this.retryTime + Math.round(Math.random() * 5000))
+      this.retryTime *= 1.3
+    }
+  }
 
-        amount = Number(amount)
-        fromId = Number(fromId)
-        id = Number(id)
+  onOpen () {
+    this.callback && this.callback()
 
-        const event = { amount, fromId, id }
+    this.retryTime = 1000
+  }
 
-        return callback(event)
-      }
-    } else if (this.app) {
-      this.app.use((ctx) => {
-        ctx.status = 200
+  onTransfer (callback) {
+    this.onTransferCallback = callback
+  }
 
-        callback(ctx.request.body)
-      })
+  onOnline (e) {
+    this.onOnlineCallback = e
+  }
+
+  onAlreadyConnected (e) {
+    this.onAlredyConnectedCallback = e
+  }
+
+  onBrokenEvent (e) {
+    this.onBrokenEventCallback = e
+  }
+
+  resoveAndDropCallback (e, t) {
+    if (this.callbackForPackId[e]) {
+      this.callbackForPackId[e].resolve(t)
+      this.dropCallback(e)
+    }
+  }
+
+  rejectAndDropCallback (e, t) {
+    if (this.callbackForPackId[e]) {
+      this.callbackForPackId[e].reject(t)
+      this.dropCallback(e)
+    }
+  }
+
+  dropCallback (e) {
+    if (this.callbackForPackId[e]) {
+      clearTimeout(this.callbackForPackId[e].ttl)
+      delete this.callbackForPackId[e]
     }
   }
 }

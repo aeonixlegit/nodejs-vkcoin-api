@@ -9,19 +9,17 @@ const vkcoin = new VKCOINAPI({
 async function run () {
   await vkcoin.updates.startPolling()
 
-  vkcoin.updates.onTransfer((event) => {
-    const { amount, fromId, id } = event
-
+  vkcoin.updates.onTransfer(async (from, score, id) => {
     /**
-       * amount - количество коинов, которые поступили
-       * fromId - ID отправителя
+       * from - ID отправителя
+       * score - количество коинов, которые поступили
        * id - ID платежа
     */
 
-    const score = vkcoin.formatCoins(amount)
+    const amount = vkcoin.formatCoins(score)
 
     console.log(
-      `Поступил платёж (${id}) от https://vk.com/id${fromId} в размере ${score} коинов`
+      `Поступил платёж (${id}) от https://vk.com/id${from} в размере ${amount} коинов`
     )
   })
 }

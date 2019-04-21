@@ -1,139 +1,121 @@
-# Node.JS VK CoinAPI
+<br />
+<p align="center">
+  <h3 align="center">Node.JS VKCoin API</h3>
+  <p align="center">
+    Node.JS API для работы с приложением ВКонакте <a href="https://vk.com/coin">VK Coin</a>
+    <br />
+    <a href="https://github.com/cursedseal/Node.JS-VK-Coin-API"><strong>Начни использовать сейчас »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/cursedseal/Node.JS-VK-Coin-API/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/cursedseal/Node.JS-VK-Coin-API/issues">Request Feature</a>
+  </p>
+</p>
 
 # Установка
-### Windows:
-* Скачайте и установите последнюю версию [Node.JS](https://nodejs.org/en/download/)
-* Создайте в удобном месте папку, например **vkcoin**
-* Перейдите в командную строку: Win + R > cmd
-* Перейдите в папку: **cd (путь до вашей папки)**
-* Пропишите: npm i nodejs-vkcoin-api
+* Скачайте и произведите установку последней версии [Node.JS](https://nodejs.org/)
+* С помощью терминала произведите установку библиотеки: `npm i nodejs-vkcoin-api`
 
-### Ubuntu:
-* Установите Node.JS по [этому](https://www.digitalocean.com/community/tutorials/node-js-ubuntu-16-04-ru) гайду
-* Создайте в удобном месте папку, например **vkcoin**
-* Перейдите в папку: **cd (путь до вашей папки)**
-* Пропишите: npm i nodejs-vkcoin-api
 # Начало работы
-Для начала использования, вам нужно создать в своей папке исполняемый файл, пусть это будет **index.js**
-
-Теперь его нужно открыть и импортировать библиотеку:
+В новом JavaScirpt файле произведите подключите уставновленную библиотеку.
 ```js
-const VKCOINAPI = require('nodejs-vkcoin-api');
-
-const vkcoin = new VKCOINAPI(options = {});
+const VKCoinAPI = require('nodejs-vkcoin-api');
+const vkcoin = new VKCoinAPI(options = {});
 ```
-
 |Опция|Тип|Описание|
 |-|-|-|
-|key|String|Ключ для взаимодействия с API|
-|userId|Number|Ваш айди ВК|
-|token|String|Ваш токен|
+|key|String|[Ваш Merchant Key для взаимодействия с API](https://vk.com/@hs-marchant-api)|
+|userId|Number|Цифровой идентификатор (ID) пользователя, через которого Вы будете авторизовываться|
+|token|String|Access Token пользователя, через которого Вы будете авторизовываться|
 
-### Где взять эти значения
-* Получение ключа (key): [описано в начале этой статьи](https://vk.com/@hs-marchant-api)
-* Получение айди вк (userId):
-
-Откройте свою аватарку и в адресной строке вы увидите подобное: **https://vk.com/fakeman.cat_fmc?z=photo236908027_456259706%2Falbum236908027_0%2Frev**
-
-Вашим айди будет являться число после слова **photo**. В этом случае **236908027**
-
-* Получение токена (token):
-
-Откройте [эту](https://oauth.vk.com/authorize?client_id=6378721&scope=1073737727&redirect_uri=https://api.vk.com/blank.html&display=page&response_type=token&revoke=1) ссылку и нажмите разрешить
-
-После этого в адресной строке будет подобное: **https://api.vk.com/blank.html#access_token=xxxxxxxxxxxx&expires_in=0&user_id=user_id&email=email**
-
-Токеном будет являться строка от **access_token** до **&expires**. В этом случае **xxxxxxxxxxxx**
 # Методы
 getTransactionList - Получает список ваших транзакций
 
 ```js
 async function run() {
-    const result = await vkcoin.getTransactionList(tx);
+  const result = await vkcoin.getTransactionList(tx)
 
-    console.log(result);
+  console.log(result)
 }
 
-run().catch(console.error);
+await run().catch(console.error)
 ```
 
 |Параметр|Тип|Описание|
 |-|-|-|
-|tx|Array<Number>|Массив айди переводов для получения ИЛИ [1] - последняя 1000 транзакций, [2] - 100|
+|tx|Array<Number>|Массив для получения ID последних переводов ИЛИ [1] - для отображения последней тысячи переводов, [2] - для отображения последней сотни переводов|
 #
-sendPayment - Делает перевод другому пользователю (в десятичных долях)
+sendPayment - Перевод VK Coins пользователю.
 
 ```js
 async function run() {
-    const result = await vkcoin.sendPayment(toId, amount); // 1 коин = 1000 ед.
+  const result = await vkcoin.sendPayment(toId, amount)
 
-    console.log(result);
+  console.log(result)
 }
 
-run().catch(console.error);
+await run().catch(console.error)
 ```
 
 |Параметр|Тип|Описание|
 |-|-|-|
-|toId|Number|Айди получателя|
-|amount|Number|Сумма перевода|
+|toId|Number|Цифровой идентификатор (ID) получателя|
+|amount|Number|Сумма перевода без учета запятой|
 #
-getLink - Получает ссылку для перевода
+getLink - Получение ссылки для получения переводов VK Coins
 
 ```js
 function run() {
-    const link = vkcoin.getLink(amount, fixation);
+  const link = vkcoin.getLink(amount, fixation)
 
-    console.log(link);
+  console.log(link)
 }
 
-run().catch(console.error);
+run().catch(console.error)
 ```
 
 |Параметр|Тип|Описание|
 |-|-|-|
-|amount|Number|Сумма перевода|
-|fixation|Boolean|Фиксированная сумма или нет|
+|amount|Number|Сумма перевода без учета запятой|
+|fixation|Boolean|Является ли сумма фиксированной?|
 #
-formatCoins - Делает получаемое из API значение коинов читабельным. Например, приходит значение 1234567890. Этот метод сделает значение таким: 1 234 567,890
-
-Это можно использовать в паре с другим методом:
+formatCoins - Форматирует VK Coins в более приятную для глаз. Например: 1234567890 -> 1 234 567,890
 ```js
 async function run() {
-    const trans = await vkcoin.getTransactionList([2]);
+  const trans = await vkcoin.getTransactionList([2])
 
-    const fixTrans = trans.response.map((tran) => {
-        tran.amount = vkcoin.formatCoins(tran.amount);
+  const fixTrans = trans.response.map((tran) => {
+    tran.amount = vkcoin.formatCoins(tran.amount)
 
-        return tran;
-    });
+    return tran
+  })
 
-    console.log(fixTrans);
+  console.log(fixTrans)
 }
 
-run().catch(console.error);
+await run().catch(console.error)
 ```
 |Параметр|Тип|Описание|
 |-|-|-|
 |coins|Number|Входящее значение коинов|
 #
-getBalance - Получает баланс по айди пользователей
+getBalance - Получает баланс пользователей по их цифорвому идентификатору (ID).
 
-getMyBalance - Получает баланс текущего пользователя
+getMyBalance - Получает баланс авторизированного пользователя
 
 ```js
 async function run() {
-    const balances = await vkcoin.getBalance([1, 100, 236908027]);
-    const myBalance = await vkcoin.getMyBalance();
+  const balances = await vkcoin.getBalance([1, 100, 236908027])
+  const myBalance = await vkcoin.getMyBalance()
 
-    console.log({ balances, myBalance });
+  console.log({ balances, myBalance })
 }
 
-run().catch(console.error);
+await run().catch(console.error)
 ```
 
 Среди этих методов аргумент принимает только getBalance:
-
 
 |Параметр|Тип|Описание|
 |-|-|-|
@@ -147,21 +129,15 @@ startPolling - Запускает обмен запросами между кл�
 
 ```js
 async function run() {
-    await vkcoin.updates.startPolling(callback);
+  await vkcoin.updates.startPolling(callback)
 }
 
-run().catch(console.error);
+run().catch(console.error)
 ```
 
 |Параметр|Тип|Описание|
 |-|-|-|
 |callback|Function|Функция обратного вызова, принимает в себя аргумент **data**|
-#
-startWebHook - Запускает сервер на 8181 порте для получения событий. Может не работать на Windows и является неоптимальным способом получения событий. В этом случае можно обойтись без асинхронной функции:
-
-```js
-vkcoin.updates.startWebHook(options = {});
-```
 
 |Опция|Тип|Описание|
 |-|-|-|
@@ -172,46 +148,24 @@ updates.onTransfer - Перехватывает входящие платежи,
 
 ```js
 async function run() {
-    await vkcoin.updates.startPolling();
+  await vkcoin.updates.startPolling()
 
-    vkcoin.updates.onTransfer((event) => {
-        console.log(event);
-    });
+  vkcoin.updates.onTransfer(async (from, score, id) => {
+    console.log({ from, score, id })
+  })
 }
 
-run().catch(console.error);
+run().catch(console.error)
 ```
 
-Или
+Или же данный перехват можно использовать совместно с CallBack:
 
 ```js
 vkcoin.updates.startPolling(async(data) => {
-    console.log(data);
+  console.log(data)
 
-    vkcoin.updates.onTransfer((event) => {
-        console.log(event);
-    });
-});
+  vkcoin.updates.onTransfer(async (from, score, id) => {
+    console.log({ from, score, id })
+  })
+})
 ```
-
-Или
-
-```js
-vkcoin.updates.startWebHook({
-    url: 'myawesomevds.to', // Public IP / URL
-});
-
-vkcoin.updates.onTransfer((event) => {
-    console.log(event);
-});
-```
-
-event - Объект, который хранит в себе информацию о платеже:
-
-|Параметр|Тип|Описание|
-|-|-|-|
-|amount|Number|Количество коинов, которые послупили на счёт|
-|fromId|Number|Айди плательщика|
-|id|Number|Айди платежа|
-
-Стоит отметить, что startWebHook получает только платежи по ссылке.

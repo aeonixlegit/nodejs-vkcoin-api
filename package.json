@@ -1,16 +1,17 @@
 {
   "name": "nodejs-vkcoin-api",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Node.JS VK Coin API implement",
   "main": "index.js",
   "dependencies": {
-    "koa": "^2.7.0",
+    "cross-env": "^5.2.0",
+    "debug": "^4.1.1",
     "request-promise": "^4.2.2",
     "requests": "^0.2.2",
+    "safe-eval": "^0.4.1",
     "url": "^0.11.0",
-    "ws": "^6.2.1",
-    "cross-env": "^5.2.0",
-    "debug": "^4.1.1"
+    "window": "^4.2.6",
+    "ws": "^6.2.1"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
