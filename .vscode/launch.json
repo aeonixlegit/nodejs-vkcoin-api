@@ -13,7 +13,7 @@
       ],
       "env": {
         "NODE_ENV": "development",
-        "DEBUG": "node.js-vkcoin-api:*",
+        "DEBUG": "node.js-vkcoin-api:*"
       },
       "restart": true,
       "stopOnEntry": true,
