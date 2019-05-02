@@ -263,9 +263,9 @@ class API {
           'Content-Type': 'application/json',
         },
         body: {
-          tx,
-          key: this.key,
           merchantId: this.userId,
+          key: this.key,
+          tx: tx,
         },
         json: true,
         method: 'POST',
@@ -302,10 +302,10 @@ class API {
           'Content-Type': 'application/json',
         },
         body: {
-          toId,
-          amount,
-          key: this.key,
           merchantId: this.userId,
+          key: this.key,
+          toId: toId,
+          amount: amount,
         },
         json: true,
         method: 'POST',
@@ -318,7 +318,7 @@ class API {
   /**
      * @param {Number} amount - Default amount to receive
      * @param {Boolean} fixation - Is amount fixed?
-     * @param {Boolean} hex - Is hexed?
+     * @param {Boolean} hex - Is hexed? (default: false)
      * @returns {String} - URL
      */
   getLink (amount, fixation, hex = false) {
@@ -335,8 +335,7 @@ class API {
      * @async
      * @param {Array<Number>} userIds - Array with user IDs
      * @property {Object} response - Result
-     * @returns {Promise<{ response: {} }>}
-     * Array result with IDs
+     * @returns {Promise<{ response: {} }>} - Array result with IDs
      */
   async getBalance (userIds) {
     if (!userIds) {
@@ -354,9 +353,9 @@ class API {
           'Content-Type': 'application/json',
         },
         body: {
-          key: this.key,
           merchantId: this.userId,
-          userIds,
+          key: this.key,
+          userIds: userIds,
         },
         json: true,
         method: 'POST',
@@ -398,7 +397,7 @@ class API {
      */
   async setShopName (name) {
     if (!name) {
-      throw new Error('New shop name is empty')
+      throw new Error('New shop name is empty.')
     }
 
     const result = await request(
@@ -429,10 +428,7 @@ class API {
   formatCoins (coins) {
     coins = Number(coins)
 
-    return (coins / 1000)
-      .toLocaleString()
-      .replace(/,/g, ' ')
-      .replace(/\./g, ',')
+    return (coins / 1000).toLocaleString().replace(/,/g, ' ').replace(/\./g, ',')
   }
 }
 

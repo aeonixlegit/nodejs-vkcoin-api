@@ -16,7 +16,7 @@ async function run () {
        * id - ID платежа
     */
 
-    const amount = vkcoin.formatCoins(score)
+    const amount = vkcoin.api.formatCoins(score)
 
     console.log(
       `Поступил платёж (${id}) от https://vk.com/id${from} в размере ${amount} коинов`

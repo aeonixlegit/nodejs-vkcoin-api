@@ -19,7 +19,7 @@ getTransactionList - Получает список ваших транзакци
 
 ```js
 async function run () {
-  const result = await vkcoin.getTransactionList(tx)
+  const result = await vkcoin.api.getTransactionList(tx)
 
   console.log(result)
 }
@@ -35,7 +35,7 @@ sendPayment - Перевод VK Coins пользователю.
 
 ```js
 async function run () {
-  const result = await vkcoin.sendPayment(toId, amount)
+  const result = await vkcoin.api.sendPayment(toId, amount)
 
   console.log(result)
 }
@@ -52,7 +52,7 @@ getLink - Получение ссылки для получения перево
 
 ```js
 function run () {
-  const link = vkcoin.getLink(amount, fixation)
+  const link = vkcoin.api.getLink(amount, fixation, hex)
 
   console.log(link)
 }
@@ -64,15 +64,16 @@ run().catch(console.error)
 |-|-|-|
 |amount|Number|Сумма перевода без учета запятой|
 |fixation|Boolean|Является ли сумма фиксированной?|
+|hex|Boolean|Генерировать ссылку с HEX параметрами?|
 
 formatCoins - Форматирует VK Coins в более приятную для глаз. Например: 1234567890 -> 1 234 567,890
 
 ```js
 async function run () {
-  const trans = await vkcoin.getTransactionList([2])
+  const trans = await vkcoin.api.getTransactionList([2])
 
   const fixTrans = trans.response.map((tran) => {
-    tran.amount = vkcoin.formatCoins(tran.amount)
+    tran.amount = vkcoin.api.formatCoins(tran.amount)
 
     return tran
   })
@@ -93,8 +94,8 @@ getMyBalance - Получает баланс авторизированного 
 
 ```js
 async function run () {
-  const balances = await vkcoin.getBalance([1, 100, 236908027])
-  const myBalance = await vkcoin.getMyBalance()
+  const balances = await vkcoin.api.getBalance([1, 100, 236908027])
+  const myBalance = await vkcoin.api.getMyBalance()
 
   console.log({ balances, myBalance })
 }
