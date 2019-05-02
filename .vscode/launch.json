@@ -13,7 +13,7 @@
       ],
       "env": {
         "NODE_ENV": "development",
-        "DEBUG": "node.js-vkcoin-api:*"
+        "DEBUG": "nodejs-vkcoin-api:*"
       },
       "restart": true,
       "stopOnEntry": true,
@@ -22,7 +22,7 @@
       "skipFiles": [
           "node_modules/**",
           "<node_internals>/**"
-      ],
+      ]
     },
     {
       "type": "node",
@@ -31,13 +31,13 @@
       "cwd": "${workspaceFolder}",
       "program": "${workspaceFolder}/index.js",
       "env": {
-        "NODE_ENV": "production",
+        "NODE_ENV": "production"
       },
       "restart": true,
       "skipFiles": [
           "node_modules/**",
           "<node_internals>/**"
-      ],
+      ]
     },
   ],
 }

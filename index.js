@@ -428,7 +428,7 @@ class API {
   formatCoins (coins) {
     coins = Number(coins)
 
-    return (coins / 1000).toLocaleString().replace(/,/g, ' ').replace(/\./g, ',')
+    return (coins / 1000).toLocaleString('ru-RU')
   }
 }
 
