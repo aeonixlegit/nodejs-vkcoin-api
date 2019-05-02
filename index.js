@@ -1,10 +1,12 @@
 const WebSocket = require('ws')
 const safeEval = require('safe-eval')
 
-const random = require('./functions/random')
-const request = require('./functions/request')
-const formatURL = require('./functions/formatURL')
-const getURLbyToken = require('./functions/getURLbyToken')
+const dechex = require('./utils/dechex')
+const isJSON = require('./utils/isJSON')
+const random = require('./utils/random')
+const request = require('./utils/request')
+const formatURL = require('./utils/formatURL')
+const getURLbyToken = require('./utils/getURLbyToken')
 
 function OmyEval (pow) {
   let res = safeEval(pow, {
@@ -35,6 +37,7 @@ class Updates {
     this.token = token
     this.userId = userId
 
+    /* auto reconnect */
     this.allowReconnect = true
     this.callback = null
     this.callbackForPackId = {}
@@ -42,16 +45,22 @@ class Updates {
     this.connecting = false
     this.onConnectSend = []
     this.ttl = 0
-
     this.ws = null
     this.wsServer = ''
-
     this.retryTime = 1000
+
+    /* user data */
+    this.place = null
+    this.digits = null
+    this.online = null
+    this.userTop = null
+    this.groupTop = null
   }
 
   /**
    * @async
    * @description Start VKAPI real-time pooling
+   * @param callback - Callback
    */
   async startPolling (callback) {
     const url = await getURLbyToken(this.token)
@@ -105,10 +114,16 @@ class Updates {
         this.reconnect(wsServer)
       }
 
-      this.ws.onmessage = ({ data: msg }) => {
-        if (msg[0] === '{') {
-          let data = JSON.parse(msg)
+      this.ws.onmessage = ({ data: message }) => {
+        if (isJSON(message)) {
+          const data = JSON.parse(message)
+
           if (data.type === 'INIT') {
+            this.place = parseInt(data.place)
+            this.digits = parseInt(data.digits)
+            this.online = parseInt(data.top.online)
+            this.userTop = parseInt(data.top.userTop)
+            this.groupTop = parseInt(data.top.groupTop)
             this.tick = parseInt(data.tick, 10)
           }
 
@@ -117,36 +132,37 @@ class Updates {
               let x = OmyEval(data.pow),
                 str = 'C1 '.concat(data.randomId, ' ') + x
 
-              if (this.connected) this.ws.send(str)
-              else this.onConnectSend.push(str)
-            } catch (e) { console.error(e) }
+              this.connected ? this.ws.send(str) : this.onConnectSend.push(str)
+            } catch (e) {
+              console.error(e)
+            }
+          } else if (message[0] === 'R') {
+            let p = message.replace('R', '').split(' '),
+              d = p.shift()
+            this.rejectAndDropCallback(d, new Error(p.join(' ')))
+          } else if (message[0] === 'C') {
+            let h = message.replace('C', '').split(' '),
+              y = h.shift()
+
+            this.resoveAndDropCallback(y, h.join(' '))
+          } else if (message === 'ALREADY_CONNECTED') {
+            this.retryTime = 15000
+            this.onAlredyConnectedCallback && this.onAlreadyConnectedCallback()
+          } else if (message.indexOf('SELF_DATA') === 0) {
+            let data = message.replace('SELF_DATA ', '').split(' ')
+            let packId = parseInt(data[3], 10)
+            this.resoveAndDropCallback(packId)
+          } else if (message === 'BROKEN') {
+            this.retryTime = 12500
+            this.onBrokenEventCallback && this.onBrokenEventCallback()
+          } else if (message.indexOf('TR') === 0) {
+            let data = message.replace('TR ', '').split(' ')
+            let score = parseInt(data[0], 10),
+              from = parseInt(data[1]),
+              id = parseInt(data[2])
+
+            this.onTransferCallback && this.onTransferCallback(from, score, id)
           }
-        } else if (msg[0] === 'R') {
-          let p = msg.replace('R', '').split(' '),
-            d = p.shift()
-          this.rejectAndDropCallback(d, new Error(p.join(' ')))
-        } else if (msg[0] === 'C') {
-          let h = msg.replace('C', '').split(' '),
-            y = h.shift()
-
-          this.resoveAndDropCallback(y, h.join(' '))
-        } else if (msg === 'ALREADY_CONNECTED') {
-          this.retryTime = 15000
-          this.onAlredyConnectedCallback && this.onAlreadyConnectedCallback()
-        } else if (msg.indexOf('SELF_DATA') === 0) {
-          let data = msg.replace('SELF_DATA ', '').split(' ')
-          let packId = parseInt(data[3], 10)
-          this.resoveAndDropCallback(packId)
-        } else if (msg === 'BROKEN') {
-          this.retryTime = 25000
-          this.onBrokenEventCallback && this.onBrokenEventCallback()
-        } else if (msg.indexOf('TR') === 0) {
-          let data = msg.replace('TR ', '').split(' ')
-          let score = parseInt(data[0], 10),
-            from = parseInt(data[1]),
-            id = parseInt(data[2])
-
-          this.onTransferCallback && this.onTransferCallback(from, score, id)
         }
       }
     } catch (e) {
@@ -223,23 +239,14 @@ class Updates {
   }
 }
 
-module.exports = class VKCoin {
+class API {
   /**
-   * @param {Object} options - Class Options
-   * @param {String} options.key - Merchant Key
-   * @param {Number} options.userId - VK User ID
-   * @param {String} options.token - VK Auth Token
+   * @param {Number} key - API-ключ
+   * @param {String} userId - ID пользователя
    */
-  constructor (options = {}) {
-    if (!options.key) throw new Error('Incorrect Merchant ID')
-    if (!options.userId) throw new Error('Incorrect User ID')
-    if (!options.token) throw new Error('Incorrect VK Auth Token')
-
-    this.key = options.key
-    this.token = options.token
-    this.userId = options.userId
-
-    this.updates = new Updates(this.key, this.token, this.userId)
+  constructor (key, userId) {
+    this.key = key
+    this.userId = userId
   }
 
   /**
@@ -311,15 +318,17 @@ module.exports = class VKCoin {
   /**
      * @param {Number} amount - Default amount to receive
      * @param {Boolean} fixation - Is amount fixed?
+     * @param {Boolean} hex - Is hexed?
      * @returns {String} - URL
      */
-  getLink (amount, fixation) {
+  getLink (amount, fixation, hex = false) {
     if (typeof amount !== 'number') {
       throw new Error('Amount must be an integer')
     }
 
     const payload = random(-2000000000, 2000000000)
-    return `vk.com/coin#x${this.userId}_${amount}_${payload}${fixation ? '' : '_1'}`
+
+    return hex ? `vk.com/coin#m${dechex(this.userId)}_${dechex(amount)}_${dechex(payload)}${fixation ? '' : '_1'}` : `vk.com/coin#x${this.userId}_${amount}_${payload}${fixation ? '' : '_1'}`
   }
 
   /**
@@ -424,5 +433,26 @@ module.exports = class VKCoin {
       .toLocaleString()
       .replace(/,/g, ' ')
       .replace(/\./g, ',')
+  }
+}
+
+module.exports = class VKCoin {
+  /**
+   * @param {Object} options - Class Options
+   * @param {String} options.key - Merchant Key
+   * @param {Number} options.userId - VK User ID
+   * @param {String} options.token - VK Auth Token
+   */
+  constructor (options = {}) {
+    if (!options.key) throw new Error('Incorrect Merchant ID')
+    if (!options.userId) throw new Error('Incorrect User ID')
+    if (!options.token) throw new Error('Incorrect VK Auth Token')
+
+    this.key = options.key
+    this.token = options.token
+    this.userId = options.userId
+
+    this.api = new API(this.key, this.userId)
+    this.updates = new Updates(this.key, this.token, this.userId)
   }
 }

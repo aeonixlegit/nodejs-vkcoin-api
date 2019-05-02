@@ -18,7 +18,7 @@ const vkcoin = new VKCoinAPI(options = {});
 getTransactionList - Получает список ваших транзакций
 
 ```js
-async function run() {
+async function run () {
   const result = await vkcoin.getTransactionList(tx)
 
   console.log(result)
@@ -34,7 +34,7 @@ await run().catch(console.error)
 sendPayment - Перевод VK Coins пользователю.
 
 ```js
-async function run() {
+async function run () {
   const result = await vkcoin.sendPayment(toId, amount)
 
   console.log(result)
@@ -51,7 +51,7 @@ await run().catch(console.error)
 getLink - Получение ссылки для получения переводов VK Coins
 
 ```js
-function run() {
+function run () {
   const link = vkcoin.getLink(amount, fixation)
 
   console.log(link)
@@ -68,7 +68,7 @@ run().catch(console.error)
 formatCoins - Форматирует VK Coins в более приятную для глаз. Например: 1234567890 -> 1 234 567,890
 
 ```js
-async function run() {
+async function run () {
   const trans = await vkcoin.getTransactionList([2])
 
   const fixTrans = trans.response.map((tran) => {
@@ -92,7 +92,7 @@ getBalance - Получает баланс пользователей по их 
 getMyBalance - Получает баланс авторизированного пользователя
 
 ```js
-async function run() {
+async function run () {
   const balances = await vkcoin.getBalance([1, 100, 236908027])
   const myBalance = await vkcoin.getMyBalance()
 
@@ -106,7 +106,23 @@ await run().catch(console.error)
 
 |Параметр|Тип|Описание|
 |-|-|-|
-|userIds|Array<Number>|Массив айди пользователей|
+|userIds|Array<Number>|Массив, содержащий ID пользователей|
+
+setShopName - Изменяет название магазина
+
+```js
+async function run () {
+  const result = await vkcoin.api.setShopName(name)
+
+  console.log(result)
+}
+
+run().catch(console.error)
+```
+
+|Параметр|Тип|Описание|
+|-|-|-|
+|name|String|Новое имя для магазина|
 
 ## Updates
 
@@ -119,7 +135,7 @@ await run().catch(console.error)
 startPolling - Запускает обмен запросами между клиентом и сервером в режиме реального времени (WebSocket). Является лучшим и быстрым способом получения событий:
 
 ```js
-async function run() {
+async function run () {
   await vkcoin.updates.startPolling(callback)
 }
 
@@ -140,7 +156,7 @@ run().catch(console.error)
 updates.onTransfer - Перехватывает входящие платежи, принимает один аргумент
 
 ```js
-async function run() {
+async function run () {
   await vkcoin.updates.startPolling()
 
   vkcoin.updates.onTransfer(async (from, score, id) => {
