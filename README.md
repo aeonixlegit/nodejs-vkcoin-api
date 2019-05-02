@@ -2,10 +2,13 @@
 <p align="center">
   <h3 align="center">Node.JS VKCoin API</h3>
   <p align="center">
+    <a href="https://www.npmjs.com/package/nodejs-vkcoin-api"><img src="https://img.shields.io/npm/dt/nodejs-vkcoin-api.svg?style=flat-square" alt="NPM downloads"></a>
+    <a href="https://www.npmjs.com/package/nodejs-vkcoin-api"><img src="https://img.shields.io/npm/v/nodejs-vkcoin-api.svg?style=flat-square" alt="NPM version"></a>
+    <a href="https://www.codacy.com/app/aeonix/nodejs-vkcoin-api"><img src="https://img.shields.io/codacy/grade/04a36b24323a4092b61f03497ebab347.svg?style=flat-square" alt="Code quality"></a>
+    <br />
+    <br />
     Node.JS API для работы с приложением ВКонакте <a href="https://vk.com/coin">VK Coin</a>
     <br />
-    <a href="https://www.npmjs.com/package/nodejs-vkcoin-api"><img src="https://img.shields.io/npm/dt/nodejs-vkcoin-api.svg?style=flat-square" alt="NPM downloads"></a>
-    <a href="https://www.codacy.com/app/aeonix/nodejs-vkcoin-api"><img src="https://img.shields.io/codacy/grade/04a36b24323a4092b61f03497ebab347.svg?style=flat-square" alt="Code quality"></a>
     <br />
     <a href="https://github.com/cursedseal/Node.JS-VK-Coin-API"><strong>Начни использовать сейчас »</strong></a>
     <br />

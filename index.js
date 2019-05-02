@@ -119,11 +119,11 @@ class Updates {
           const data = JSON.parse(message)
 
           if (data.type === 'INIT') {
-            this.place = parseInt(data.place)
-            this.digits = parseInt(data.digits)
-            this.online = parseInt(data.top.online)
-            this.userTop = parseInt(data.top.userTop)
-            this.groupTop = parseInt(data.top.groupTop)
+            this.place = parseInt(data.place, 10)
+            this.digits = parseInt(data.digits, 10)
+            this.online = parseInt(data.top.online, 10)
+            this.userTop = parseInt(data.top.userTop, 10)
+            this.groupTop = parseInt(data.top.groupTop, 10)
             this.tick = parseInt(data.tick, 10)
           }
 
