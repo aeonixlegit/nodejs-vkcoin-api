@@ -35,7 +35,7 @@ sendPayment - Перевод VK Coins пользователю.
 
 ```js
 async function run () {
-  const result = await vkcoin.api.sendPayment(toId, amount)
+  const result = await vkcoin.api.sendPayment(toId, amount, markAsMerchant)
 
   console.log(result)
 }
@@ -47,6 +47,7 @@ await run().catch(console.error)
 |-|-|-|
 |toId|Number|Цифровой идентификатор (ID) получателя|
 |amount|Number|Сумма перевода без учета запятой|
+|markAsMerchant|Boolean|Отправлять от имени магазина? (setShopName) (default:false)|
 
 getLink - Получение ссылки для получения переводов VK Coins
 
@@ -64,7 +65,7 @@ run().catch(console.error)
 |-|-|-|
 |amount|Number|Сумма перевода без учета запятой|
 |fixation|Boolean|Является ли сумма фиксированной?|
-|hex|Boolean|Генерировать ссылку с HEX параметрами?|
+|hex|Boolean|Генерировать ссылку с HEX параметрами? (default: false)|
 
 formatCoins - Форматирует VK Coins в более приятную для глаз. Например: 1234567890 -> 1 234 567,890
 

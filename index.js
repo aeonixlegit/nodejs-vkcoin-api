@@ -277,6 +277,7 @@ class API {
      * @async
      * @param {Number} toId - Transfer to
      * @param {Number} amount - Amount to transfer
+     * @param {Boolean} markAsMerchant - Mark As Merchant (default: false)
      * @property {Object} response - Result
      * @property {Number} response.id - Transaction ID
      * @property {Number} response.amount - Coins amount
@@ -284,13 +285,17 @@ class API {
      * @returns {Promise<{ response: { id: Number, amount: Number, current: Number } }>}
      * Object with keys id, amount, current
      */
-  async sendPayment (toId, amount) {
+  async sendPayment (toId, amount, markAsMerchant = false) {
     if (typeof toId !== 'number') {
       throw new Error('ID must be an integer')
     }
 
     if (typeof amount !== 'number') {
       throw new Error('Amount must be an integer')
+    }
+
+    if (typeof markAsMerchant !== 'boolean') {
+      throw new Error('markAsMerchant must be an boolean')
     }
 
     const result = await request(
@@ -304,6 +309,7 @@ class API {
           key: this.key,
           toId: toId,
           amount: amount,
+          markAsMerchant: markAsMerchant,
         },
         json: true,
         method: 'POST',
