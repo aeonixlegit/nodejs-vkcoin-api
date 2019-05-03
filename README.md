@@ -6,18 +6,17 @@
     <a href="https://www.npmjs.com/package/nodejs-vkcoin-api"><img src="https://img.shields.io/npm/v/nodejs-vkcoin-api.svg?style=flat-square" alt="NPM version"></a>
     <a href="https://www.codacy.com/app/aeonix/nodejs-vkcoin-api"><img src="https://img.shields.io/codacy/grade/04a36b24323a4092b61f03497ebab347.svg?style=flat-square" alt="Code quality"></a>
     <br />
-    <br />
     Node.JS API для работы с приложением ВКонакте <a href="https://vk.com/coin">VK Coin</a>
     <br />
     <br />
-    <a href="https://github.com/cursedseal/Node.JS-VK-Coin-API"><strong>Начни использовать сейчас »</strong></a>
+    <a href="https://github.com/aeonixlegit/Node.JS-VKCoin-API"><strong>Начни использовать сейчас »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/cursedseal/Node.JS-VK-Coin-API/tree/master/docs">Documentation</a>
+    <a href="https://github.com/aeonixlegit/Node.JS-VKCoin-API/tree/master/docs">Documentation</a>
     ·
-    <a href="https://github.com/cursedseal/Node.JS-VK-Coin-API/issues">Report Bug</a>
+    <a href="https://github.com/aeonixlegit/Node.JS-VKCoin-API/issues">Report Bug</a>
     ·
-    <a href="https://github.com/cursedseal/Node.JS-VK-Coin-API/issues">Request Feature</a>
+    <a href="https://github.com/aeonixlegit/Node.JS-VKCoin-API/issues">Request Feature</a>
   </p>
 </p>
 

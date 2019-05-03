@@ -114,10 +114,9 @@ class Updates {
         this.reconnect(wsServer)
       }
 
-      this.ws.onmessage = ({ data: message }) => {
-        if (isJSON(message)) {
-          const data = JSON.parse(message)
-
+      this.ws.onmessage = ({ data: msg }) => {
+        if (msg[0] === '{') {
+          let data = JSON.parse(msg)
           if (data.type === 'INIT') {
             this.place = parseInt(data.place, 10)
             this.digits = parseInt(data.digits, 10)
@@ -132,37 +131,36 @@ class Updates {
               let x = OmyEval(data.pow),
                 str = 'C1 '.concat(data.randomId, ' ') + x
 
-              this.connected ? this.ws.send(str) : this.onConnectSend.push(str)
-            } catch (e) {
-              console.error(e)
-            }
-          } else if (message[0] === 'R') {
-            let p = message.replace('R', '').split(' '),
-              d = p.shift()
-            this.rejectAndDropCallback(d, new Error(p.join(' ')))
-          } else if (message[0] === 'C') {
-            let h = message.replace('C', '').split(' '),
-              y = h.shift()
-
-            this.resoveAndDropCallback(y, h.join(' '))
-          } else if (message === 'ALREADY_CONNECTED') {
-            this.retryTime = 15000
-            this.onAlredyConnectedCallback && this.onAlreadyConnectedCallback()
-          } else if (message.indexOf('SELF_DATA') === 0) {
-            let data = message.replace('SELF_DATA ', '').split(' ')
-            let packId = parseInt(data[3], 10)
-            this.resoveAndDropCallback(packId)
-          } else if (message === 'BROKEN') {
-            this.retryTime = 12500
-            this.onBrokenEventCallback && this.onBrokenEventCallback()
-          } else if (message.indexOf('TR') === 0) {
-            let data = message.replace('TR ', '').split(' ')
-            let score = parseInt(data[0], 10),
-              from = parseInt(data[1]),
-              id = parseInt(data[2])
-
-            this.onTransferCallback && this.onTransferCallback(from, score, id)
+              if (this.connected) this.ws.send(str)
+              else this.onConnectSend.push(str)
+            } catch (e) { console.error(e) }
           }
+        } else if (msg[0] === 'R') {
+          let p = msg.replace('R', '').split(' '),
+            d = p.shift()
+          this.rejectAndDropCallback(d, new Error(p.join(' ')))
+        } else if (msg[0] === 'C') {
+          let h = msg.replace('C', '').split(' '),
+            y = h.shift()
+
+          this.resoveAndDropCallback(y, h.join(' '))
+        } else if (msg === 'ALREADY_CONNECTED') {
+          this.retryTime = 15000
+          this.onAlredyConnectedCallback && this.onAlreadyConnectedCallback()
+        } else if (msg.indexOf('SELF_DATA') === 0) {
+          let data = msg.replace('SELF_DATA ', '').split(' ')
+          let packId = parseInt(data[3], 10)
+          this.resoveAndDropCallback(packId)
+        } else if (msg === 'BROKEN') {
+          this.retryTime = 25000
+          this.onBrokenEventCallback && this.onBrokenEventCallback()
+        } else if (msg.indexOf('TR') === 0) {
+          let data = msg.replace('TR ', '').split(' ')
+          let score = parseInt(data[0], 10),
+            from = parseInt(data[1]),
+            id = parseInt(data[2])
+
+          this.onTransferCallback && this.onTransferCallback(from, score, id)
         }
       }
     } catch (e) {
