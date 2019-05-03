@@ -31,6 +31,8 @@ await run().catch(console.error)
 |-|-|-|
 |tx|Array<Number>|Массив для получения ID последних переводов ИЛИ [1] - для отображения последней тысячи переводов, [2] - для отображения последней сотни переводов|
 
+<hr>
+
 sendPayment - Перевод VK Coins пользователю.
 
 ```js
@@ -49,6 +51,8 @@ await run().catch(console.error)
 |amount|Number|Сумма перевода без учета запятой|
 |markAsMerchant|Boolean|Отправлять от имени магазина? (setShopName) (default:false)|
 
+<hr>
+
 getLink - Получение ссылки для получения переводов VK Coins
 
 ```js
@@ -66,6 +70,8 @@ run().catch(console.error)
 |amount|Number|Сумма перевода без учета запятой|
 |fixation|Boolean|Является ли сумма фиксированной?|
 |hex|Boolean|Генерировать ссылку с HEX параметрами? (default: false)|
+
+<hr>
 
 formatCoins - Форматирует VK Coins в более приятную для глаз. Например: 1234567890 -> 1 234 567,890
 
@@ -89,6 +95,8 @@ await run().catch(console.error)
 |-|-|-|
 |coins|Number|Входящее значение коинов|
 
+<hr>
+
 getBalance - Получает баланс пользователей по их цифорвому идентификатору (ID).
 
 getMyBalance - Получает баланс авторизированного пользователя
@@ -109,6 +117,8 @@ await run().catch(console.error)
 |Параметр|Тип|Описание|
 |-|-|-|
 |userIds|Array<Number>|Массив, содержащий ID пользователей|
+
+<hr>
 
 setShopName - Изменяет название магазина
 
