@@ -277,7 +277,8 @@ class API {
      * @async
      * @param {Number} toId - Transfer to
      * @param {Number} amount - Amount to transfer
-     * @param {Boolean} markAsMerchant - Mark As Merchant (default: false)
+     * @param {Boolean} markAsMerchant - Mark As Merchant
+     * @default markAsMerchant false
      * @property {Object} response - Result
      * @property {Number} response.id - Transaction ID
      * @property {Number} response.amount - Coins amount
@@ -322,15 +323,18 @@ class API {
   /**
      * @param {Number} amount - Default amount to receive
      * @param {Boolean} fixation - Is amount fixed?
-     * @param {Boolean} hex - Is hexed? (default: false)
+     * @param {Boolean} hex - Is hexed?
+     * @param {Number} payload - Payload
+     * @default hex false
+     * @default payload random(-2000000000, 2000000000)
      * @returns {String} - URL
      */
-  getLink (amount, fixation, hex = false) {
+  generateLink (amount, fixation, hex = false, payload = null) {
     if (typeof amount !== 'number') {
       throw new Error('Amount must be an integer')
     }
 
-    const payload = random(-2000000000, 2000000000)
+    payload = payload === null ? random(-2000000000, 2000000000) : payload
 
     return hex ? `vk.com/coin#m${dechex(this.userId)}_${dechex(amount)}_${dechex(payload)}${fixation ? '' : '_1'}` : `vk.com/coin#x${this.userId}_${amount}_${payload}${fixation ? '' : '_1'}`
   }
@@ -346,8 +350,13 @@ class API {
       throw new Error('User IDs not found')
     }
 
-    if (!(userIds instanceof Array)) {
-      throw new Error('`userIds` must be an array')
+    if (!Array.isArray(userIds)) {
+      if (typeof userIds !== 'number') {
+        throw new Error('`userIds` must be an array')
+      }
+      else {
+        userIds = [userIds]
+      }
     }
 
     const result = await request(
@@ -430,9 +439,15 @@ class API {
      * @returns {String} - Formatted result
      */
   formatCoins (coins) {
-    coins = Number(coins)
+    if (!coins) {
+      throw new Error('Coins to format is empty.')
+    }
+    if (typeof coins !== 'number') {
+      throw new Error('`coins` must be a nubmer.')
+    }
 
-    return (coins / 1000).toLocaleString('ru-RU')
+    return (coins / 1000).toLocaleString().replace(/,/g, ' ').replace(/\./g, ',')
+    // FIXME: Node.JS Intl integration (npmjs.com/package/intl) ~ return (coins / 1000).toLocaleString('ru-RU')
   }
 }
 

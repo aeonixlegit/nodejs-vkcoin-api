@@ -53,11 +53,11 @@ await run().catch(console.error)
 
 <hr>
 
-getLink - Получение ссылки для получения переводов VK Coins
+generateLink - Генерация ссылки для получения переводов VK Coins
 
 ```js
 function run () {
-  const link = vkcoin.api.getLink(amount, fixation, hex)
+  const link = vkcoin.api.generateLink(amount, fixation, hex, payload)
 
   console.log(link)
 }
@@ -70,6 +70,7 @@ run().catch(console.error)
 |amount|Number|Сумма перевода без учета запятой|
 |fixation|Boolean|Является ли сумма фиксированной?|
 |hex|Boolean|Генерировать ссылку с HEX параметрами? (default: false)|
+|payload|Number|Payload (default: random)|
 
 <hr>
 
