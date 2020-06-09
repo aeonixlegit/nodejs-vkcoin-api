@@ -1,27 +1,21 @@
-const VKCOINAPI = require('nodejs-vkcoin-api') // Libary Init
+const VKCoin = require('../../index') // Замените '../../index' на 'nodejs-vkcoin-api'
 
-const vkcoin = new VKCOINAPI({
-  key: 'Merchant Key',
+const vkc = new VKCoin({
+  key: 'N0d3.JsVkCo1nAP1',
   userId: 1,
-  token: 'VK Auth Token',
+  token: 'beefb3efb33fbe3f',
 })
 
-async function run () {
-  await vkcoin.updates.startPolling()
+vkc.updates.onTransfer((data) => {
+  const { id, amount, fromId } = data
+  console.log(`Поступил новый перевод от @id${fromId} в размере ${vkc.utils.splitAmount(amount / 1000)} VKC (ID перевода: ${id})`)
+})
 
-  vkcoin.updates.onTransfer(async (from, score, id) => {
-    /**
-       * from - ID отправителя
-       * score - количество коинов, которые поступили
-       * id - ID платежа
-    */
+vkc.updates.startPolling()
 
-    const amount = vkcoin.api.formatCoins(score)
+const paymentUrl = vkc.utils.getLink({
+  amount: 1000000,
+  hex: true
+})
 
-    console.log(
-      `Поступил платёж (${id}) от https://vk.com/id${from} в размере ${amount} коинов`
-    )
-  })
-}
-
-run().catch(console.error)
+console.log(`Для перевода средств используйте ссылку ${paymentUrl}`)

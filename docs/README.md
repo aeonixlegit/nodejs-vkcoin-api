@@ -3,8 +3,13 @@
 В новом JavaScirpt файле произведите подключите уставновленную библиотеку.
 
 ```js
-const VKCoinAPI = require('nodejs-vkcoin-api');
-const vkcoin = new VKCoinAPI(options = {});
+const VKCoinAPI = require('nodejs-vkcoin-api')
+
+const vkcoin = new VKCoinAPI({
+  token: 'Токен пользователя ВКонтакте',
+  userId: 123,
+  key: 'Merchant Key от VK Coin',
+})
 ```
 
 |Опция|Тип|Описание|
@@ -24,7 +29,7 @@ async function run () {
   console.log(result)
 }
 
-await run().catch(console.error)
+run().catch(console.error)
 ```
 
 |Параметр|Тип|Описание|
@@ -33,33 +38,13 @@ await run().catch(console.error)
 
 <hr>
 
-sendPayment - Перевод VK Coins пользователю.
+transfer - Перевод VK Coins пользователю.
 
 ```js
 async function run () {
-  const result = await vkcoin.api.sendPayment(toId, amount, markAsMerchant)
+  const result = await vkcoin.api.transfer(571954988, 10000, true)
 
   console.log(result)
-}
-
-await run().catch(console.error)
-```
-
-|Параметр|Тип|Описание|
-|-|-|-|
-|toId|Number|Цифровой идентификатор (ID) получателя|
-|amount|Number|Сумма перевода без учета запятой|
-|markAsMerchant|Boolean|Отправлять от имени магазина? (setShopName) (default:false)|
-
-<hr>
-
-generateLink - Генерация ссылки для получения переводов VK Coins
-
-```js
-function run () {
-  const link = vkcoin.api.generateLink(amount, fixation, hex, payload)
-
-  console.log(link)
 }
 
 run().catch(console.error)
@@ -67,57 +52,30 @@ run().catch(console.error)
 
 |Параметр|Тип|Описание|
 |-|-|-|
+|toId|Number|Цифровой идентификатор (ID) получателя|
 |amount|Number|Сумма перевода без учета запятой|
-|fixation|Boolean|Является ли сумма фиксированной?|
-|hex|Boolean|Генерировать ссылку с HEX параметрами? (default: false)|
-|payload|Number|Payload (default: random)|
+|markAsMerchant|Boolean|Отправлять от имени магазина? (default:false)|
 
 <hr>
 
-formatCoins - Форматирует VK Coins в более приятную для глаз. Например: 1234567890 -> 1 234 567,890
+getBalance - Получает баланс пользователей по их цифорвому идентификатору (ID), если не указать ID, будет использован ID платежного пользователя.
+
+В случае запроса баланса одного пользователя, будет возвращен его баланс без ID.
 
 ```js
 async function run () {
-  const trans = await vkcoin.api.getTransactionList([2])
-
-  const fixTrans = trans.response.map((tran) => {
-    tran.amount = vkcoin.api.formatCoins(tran.amount)
-
-    return tran
-  })
-
-  console.log(fixTrans)
-}
-
-await run().catch(console.error)
-```
-
-|Параметр|Тип|Описание|
-|-|-|-|
-|coins|Number|Входящее значение коинов|
-
-<hr>
-
-getBalance - Получает баланс пользователей по их цифорвому идентификатору (ID).
-
-getMyBalance - Получает баланс авторизированного пользователя
-
-```js
-async function run () {
-  const balances = await vkcoin.api.getBalance([1, 100, 236908027])
-  const myBalance = await vkcoin.api.getMyBalance()
+  const balances = await vkcoin.api.getBalance([1, 100, 571954988])
+  const myBalance = await vkcoin.api.getBalance()
 
   console.log({ balances, myBalance })
 }
 
-await run().catch(console.error)
+run().catch(console.error)
 ```
-
-Среди этих методов аргумент принимает только getBalance:
 
 |Параметр|Тип|Описание|
 |-|-|-|
-|userIds|Array<Number>|Массив, содержащий ID пользователей|
+|userIds|Array<Number>|Необязательно: Массив, содержащий ID пользователей|
 
 <hr>
 
@@ -137,13 +95,64 @@ run().catch(console.error)
 |-|-|-|
 |name|String|Новое имя для магазина|
 
+## Utils
+
+**utils** - это дополнительный функционал в враппере, позволяющий форматировать коины и генерировать ссылку на перевод.
+
+splitAmount - Форматирует VK Coins в более приятную для глаз. Например: 1234567890 -> 1 234 567,89
+
+```js
+async function run () {
+  const trans = await vkcoin.api.getTransactionList([2])
+
+  const fixTrans = trans.response.map((tran) => {
+    tran.amount = vkcoin.utils.splitAmount(tran.amount)
+
+    return tran
+  })
+
+  console.log(fixTrans)
+}
+
+run().catch(console.error)
+```
+
+|Параметр|Тип|Описание|
+|-|-|-|
+|coins|Number|Входящее значение коинов|
+
+<hr>
+
+getLink - Генерация ссылки для получения переводов VK Coins
+
+```js
+function run () {
+  const link = vkcoin.utils.generateLink({
+    amount: 1000,
+    fixation: true,
+    hex: true,
+   })
+
+  console.log(link)
+}
+
+run().catch(console.error)
+```
+
+|Параметр|Тип|Описание|
+|-|-|-|
+|object|Object|Объект, содержащий следующие значения|
+|object.amount|Number|Сумма перевода без учета запятой|
+|object.fixation|Boolean|Является ли сумма фиксированной? (default: false)|
+|object.hex|Boolean|Генерировать ссылку с HEX параметрами? (default: false)|
+|object.payload|Number|Payload (default: random)|
+
+
 ## Updates
 
-**updates** - Позволяет "прослушивать" события в VK Coin. Пока что я реализовал перехват входящего платежа, но вскоре придумаю что-нибудь ещё. И да, впервые работаю с сокетами :)
+**updates** - Позволяет "прослушивать" события в VK Coin. Пока что я реализовал перехват входящего платежа, но вскоре придумаю что-нибудь ещё.
 
 ### Запуск
-
-Для запуска прослушивания есть 2 метода: startPolling и startWebHook
 
 startPolling - Запускает обмен запросами между клиентом и сервером в режиме реального времени (WebSocket). Является лучшим и быстрым способом получения событий:
 
@@ -155,39 +164,14 @@ async function run () {
 run().catch(console.error)
 ```
 
-|Параметр|Тип|Описание|
-|-|-|-|
-|callback|Function|Функция обратного вызова, принимает в себя аргумент **data**|
-
-|Опция|Тип|Описание|
-|-|-|-|
-|url|String|Адрес вашего сервера для получения событий|
-|port|Number|Порт для запуска сервера (8181 - по умолчанию)|
-
 ## События
 
 updates.onTransfer - Перехватывает входящие платежи, принимает один аргумент
 
 ```js
-async function run () {
-  await vkcoin.updates.startPolling()
-
-  vkcoin.updates.onTransfer(async (from, score, id) => {
-    console.log({ from, score, id })
-  })
-}
-
-run().catch(console.error)
-```
-
-Или же данный перехват можно использовать совместно с CallBack:
-
-```js
-vkcoin.updates.startPolling(async(data) => {
-  console.log(data)
-
-  vkcoin.updates.onTransfer(async (from, score, id) => {
-    console.log({ from, score, id })
-  })
+vkcoin.updates.onTransfer(async (from, score, id) => {
+  console.log({ from, score, id })
 })
+
+vkcoin.updates.startPolling()
 ```

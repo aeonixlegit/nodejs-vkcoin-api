@@ -1,17 +1,13 @@
 {
   "name": "nodejs-vkcoin-api",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "description": "Node.JS VK Coin API implement",
   "main": "index.js",
   "typings": "./docs/typings",
   "dependencies": {
     "cross-env": "^5.2.0",
     "debug": "^4.1.1",
-    "request-promise": "^4.2.2",
-    "requests": "^0.2.2",
-    "safe-eval": "^0.4.1",
-    "url": "^0.11.0",
-    "window": "^4.2.6",
+    "node-fetch": "^2.6.0",
     "ws": "^6.2.1"
   },
   "devDependencies": {
@@ -30,7 +26,7 @@
     }
   },
   "engines": {
-    "node": "^8 || ^10 || ^11"
+    "node": "^8 || ^10 || ^11 || ^12 || ^13"
   },
   "scripts": {
     "lint": "eslint .",
@@ -48,7 +44,7 @@
     "js"
   ],
   "author": "aeonixlegit",
-  "license": "ISC",
+  "license": "MIT",
   "directories": {
     "doc": "docs"
   },
