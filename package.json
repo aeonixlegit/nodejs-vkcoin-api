@@ -1,6 +1,6 @@
 {
   "name": "nodejs-vkcoin-api",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Node.JS VK Coin API implement",
   "main": "index.js",
   "typings": "./docs/typings",
@@ -50,10 +50,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aeonixlegit/Node.JS-VKCoin-API.git"
+    "url": "git+https://github.com/aeonixlegit/nodejs-vkcoin-api.git"
   },
   "bugs": {
-    "url": "https://github.com/aeonixlegit/Node.JS-VKCoin-API/issues"
+    "url": "https://github.com/aeonixlegit/nodejs-vkcoin-api/issues"
   },
-  "homepage": "https://github.com/aeonixlegit/Node.JS-VKCoin-API#readme"
+  "homepage": "https://github.com/aeonixlegit/nodejs-vkcoin-api#readme"
 }
