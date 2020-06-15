@@ -15,7 +15,7 @@ vkc.updates.startPolling()
 
 const paymentUrl = vkc.utils.getLink({
   amount: 1000000,
-  hex: true
+  hex: true,
 })
 
 console.log(`Для перевода средств используйте ссылку ${paymentUrl}`)

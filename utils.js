@@ -7,7 +7,7 @@ const dec2hex = (number) => {
 }
 
 class Utils {
-  constructor(userId) {
+  constructor (userId) {
     this.userId = userId
   }
 
@@ -16,7 +16,7 @@ class Utils {
    * @param {Number} coins Количество коинов для форматирования
    * @returns {String} Отформатированное количество коинов
    */
-  splitAmount(coins) {
+  splitAmount (coins) {
     if (typeof coins !== 'number') coins = parseInt(coins, 10)
     if (coins == null || isNaN(coins)) {
       throw new Error('You must specify coins as a number or string.')
@@ -31,7 +31,7 @@ class Utils {
    * @param {Number} amount? Количество коинов для перевода
    * @returns {String} Ссылка для пополнения платежного пользователя
    */
-  getLink({ amount = 100000000, fixation = false, payload, hex = false }) {
+  getLink ({ amount = 100000000, fixation = false, payload, hex = false }) {
     if (typeof amount !== 'number') {
       throw new Error('Amount must be an integer')
     }
@@ -40,7 +40,25 @@ class Utils {
       payload = Math.round(-2000000000 - 0.5 + Math.random() * 4000000001)
     }
 
-    return `vk.com/coin#${hex ? 'm' : 'x'}${hex ? dec2hex(this.userId) : userId}_${hex ? dec2hex(amount) : amount}_${hex ? dec2hex(payload) : payload}${fixation ? '' : '_1'}`
+    return `vk.com/coin#${hex ? 'm' : 'x'}${hex ? dec2hex(this.userId) : this.userId}_${hex ? dec2hex(amount) : amount}_${hex ? dec2hex(payload) : payload}${fixation ? '' : '_1'}`
+  }
+
+  /**
+   * @description Генерация хеша ссылки на перевод (для application button)
+   * @param {Object} object Объект с параметрами для генерации ссылки
+   * @param {Number} amount? Количество коинов для перевода
+   * @returns {String} Ссылка для пополнения платежного пользователя
+   */
+  getHash ({ amount = 100000000, fixation = false, payload, hex = false }) {
+    if (typeof amount !== 'number') {
+      throw new Error('Amount must be an integer')
+    }
+
+    if (payload == null) {
+      payload = Math.round(-2000000000 - 0.5 + Math.random() * 4000000001)
+    }
+
+    return `${hex ? 'm' : 'x'}${hex ? dec2hex(this.userId) : this.userId}_${hex ? dec2hex(amount) : amount}_${hex ? dec2hex(payload) : payload}${fixation ? '' : '_1'}`
   }
 }
 

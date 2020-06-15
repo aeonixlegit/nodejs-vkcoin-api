@@ -14,7 +14,7 @@ const formatLink = (inputURL, userId) => {
   return urlws
 }
 
-async function getUrlByToken(token) {
+async function getUrlByToken (token) {
   const response = await fetch(`https://api.vk.com/method/apps.get?access_token=${token}&app_id=6915965&v=5.107`)
 
   const json = await response.json()
@@ -43,7 +43,7 @@ class Updates extends EventEmitter {
    * @param {String} userToken Токен пользователя
    * @param {Number} userId Уникальный идентификатор пользователя во ВКонтакте
    */
-  constructor(key, userToken, userId) {
+  constructor (key, userToken, userId) {
     super()
 
     this.key = key
@@ -57,7 +57,7 @@ class Updates extends EventEmitter {
     this.isStarted = false
   }
 
-  async startPolling() {
+  async startPolling () {
     if (!this.userToken) {
       throw new Error('Не указан токен пользователя для запуска polling.')
     }
@@ -80,23 +80,23 @@ class Updates extends EventEmitter {
         const jsonMessage = JSON.parse(message)
 
         if (jsonMessage.type === 'INIT') {
-          this.place = jsonMessage.place;
-          this.digits = jsonMessage.digits;
-          this.online = jsonMessage.top.online;
-          this.userTop = jsonMessage.top.userTop;
-          this.groupTop = jsonMessage.top.groupTop;
+          this.place = jsonMessage.place
+          this.digits = jsonMessage.digits
+          this.online = jsonMessage.top.online
+          this.userTop = jsonMessage.top.userTop
+          this.groupTop = jsonMessage.top.groupTop
         }
       }
 
       if (message.startsWith('TR')) {
         const { amount, fromId, id } = message.match(
           /^(?:TR)\s(?<amount>.*)\s(?<fromId>.*)\s(?<id>.*)/i
-        ).groups;
+        ).groups
 
         this.emit('transfer', {
           id: Number(id),
           amount: Number(amount),
-          fromId: Number(fromId)
+          fromId: Number(fromId),
         })
       }
     })
@@ -106,11 +106,11 @@ class Updates extends EventEmitter {
     })
   }
 
-  reconnect() {
+  reconnect () {
     return this.startPolling()
   }
 
-  onTransfer(callback) {
+  onTransfer (callback) {
     this.on('transfer', callback)
   }
 }

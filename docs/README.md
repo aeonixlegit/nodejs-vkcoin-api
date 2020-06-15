@@ -123,11 +123,11 @@ run().catch(console.error)
 
 <hr>
 
-getLink - Генерация ссылки для получения переводов VK Coins
+getLink - Генерация ссылки для получения переводов VK Coin
 
 ```js
 function run () {
-  const link = vkcoin.utils.generateLink({
+  const link = vkcoin.utils.getLink({
     amount: 1000,
     fixation: true,
     hex: true,
@@ -147,6 +147,31 @@ run().catch(console.error)
 |object.hex|Boolean|Генерировать ссылку с HEX параметрами? (default: false)|
 |object.payload|Number|Payload (default: random)|
 
+<hr>
+
+getHash - Генерация хеша ссылки для получения переводов VK Coin, полезно для встраивания в кнопку.
+
+```js
+function run () {
+  const hash = vkcoin.utils.getHash({
+    amount: 1000,
+    fixation: true,
+    hex: true,
+   })
+
+  console.log(hash)
+}
+
+run().catch(console.error)
+```
+
+|Параметр|Тип|Описание|
+|-|-|-|
+|object|Object|Объект, содержащий следующие значения|
+|object.amount|Number|Сумма перевода без учета запятой|
+|object.fixation|Boolean|Является ли сумма фиксированной? (default: false)|
+|object.hex|Boolean|Генерировать ссылку с HEX параметрами? (default: false)|
+|object.payload|Number|Payload (default: random)|
 
 ## Updates
 

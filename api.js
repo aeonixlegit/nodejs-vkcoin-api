@@ -24,7 +24,7 @@ class API {
     const requestBody = {
       key: this.key,
       merchantId: this.merchantId,
-      ...params
+      ...params,
     }
 
     const response = await fetch(`https://coin-without-bugs.vkforms.ru/merchant/${method}`, {
@@ -32,7 +32,7 @@ class API {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify(requestBody),
     })
 
     const json = await response.json()
@@ -94,7 +94,7 @@ class API {
    * @default userIds Платежный пользователь
    */
 
-  async getBalance(userIds = [this.merchantId]) {
+  async getBalance (userIds = [this.merchantId]) {
     const { response } = await this.call('score', { userIds })
 
     return userIds.length === 1 ? response[userIds[0]] : response
